@@ -1,5 +1,6 @@
 package ru.yandex.practicum.configuration;
 
+import jakarta.annotation.PreDestroy;
 import lombok.*;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -8,7 +9,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.exception.TopicException;
 
+import java.time.Duration;
 import java.util.*;
 
 @Getter
@@ -17,6 +20,7 @@ import java.util.*;
 @Configuration
 @ConfigurationProperties("collector.kafka")
 public class KafkaConfig {
+
     public ProducerConfig producer;
 
     public enum TopicType {
@@ -30,15 +34,14 @@ public class KafkaConfig {
                 case "hubs-events" -> {
                     return TopicType.HUBS_EVENTS;
                 }
-                default -> throw new RuntimeException("Topic type not found");
-
+                default -> throw new TopicException("Topic type not found");
             }
         }
     }
 
     @Getter
     public static class ProducerConfig {
-        public final Properties properties;
+        private final Properties properties;
         private final EnumMap<TopicType, String> topics = new EnumMap<>(TopicType.class);
 
 
@@ -70,6 +73,12 @@ public class KafkaConfig {
             ProducerRecord<String, SpecificRecordBase> record =
                     new ProducerRecord<>(topic, key, event);
             kafkaProducer.send(record);
+        }
+
+        @PreDestroy
+        public void closeProducer() {
+            kafkaProducer.flush();
+            kafkaProducer.close(Duration.ofSeconds(10));
         }
     }
 }
