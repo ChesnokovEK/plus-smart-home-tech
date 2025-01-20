@@ -7,13 +7,10 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-@Getter
-@Setter
-@ToString
+@Data
 @Configuration
 @ConfigurationProperties("aggregator.kafka")
 public class KafkaConfig {
@@ -38,22 +35,10 @@ public class KafkaConfig {
         }
     }
 
-    @Getter
-    public static class ProducerConfig {
-        public final Properties properties;
-
-        public ProducerConfig(Properties properties) {
-            this.properties = properties;
-        }
+    public record ProducerConfig(Properties properties) {
     }
 
-    @Getter
-    public static class ConsumerConfig {
-        public final Properties properties;
-
-        public ConsumerConfig(Properties properties) {
-            this.properties = properties;
-        }
+    public record ConsumerConfig(Properties properties) {
     }
 
     @Getter
@@ -66,7 +51,6 @@ public class KafkaConfig {
             }
         }
     }
-
 
     @Bean
     public KafkaProducer<String, SpecificRecordBase> kafkaProducer() {
@@ -82,24 +66,4 @@ public class KafkaConfig {
     public EnumMap<TopicType, String> topics() {
         return new Topics(topics).getTopics();
     }
-
-    @Component
-    @RequiredArgsConstructor
-    public static class KafkaEventProducer {
-        private final KafkaProducer<String, SpecificRecordBase> kafkaProducer;
-
-//        public <T extends SpecificRecordBase> void send(String topic, String key, T event) {
-//            ProducerRecord<String, SpecificRecordBase> record =
-//                    new ProducerRecord<>(topic, key, event);
-//            kafkaProducer.send(record);
-//        }
-    }
-
-    @Component
-    @RequiredArgsConstructor
-    public static class KafkaEventConsumer {
-        private final KafkaConsumer<String, SpecificRecordBase> kafkaConsumer;
-    }
 }
-
-
