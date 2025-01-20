@@ -5,9 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "conditions")
-@Getter
-@Setter
-@ToString
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

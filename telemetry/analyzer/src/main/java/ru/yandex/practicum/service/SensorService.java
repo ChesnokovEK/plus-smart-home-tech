@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.entity.Sensor;
@@ -23,12 +24,13 @@ public class SensorService {
     }
 
     public void addSensor(String sensorId, String hubId) {
-        if (!existsBySensorIdsAndHubId(hubId, sensorId)) {
-            Sensor sensor = new Sensor();
-            sensor.setId(sensorId);
-            sensor.setHubId(hubId);
-            sensorRepository.save(sensor);
+        if (existsBySensorIdsAndHubId(hubId, sensorId)) {
+            return;
         }
+        Sensor sensor = new Sensor();
+        sensor.setId(sensorId);
+        sensor.setHubId(hubId);
+        sensorRepository.save(sensor);
     }
 
     public void removeSensor(String sensorId, String hubId) {
