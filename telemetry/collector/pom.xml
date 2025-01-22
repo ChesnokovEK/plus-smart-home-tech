@@ -8,7 +8,9 @@
         <artifactId>telemetry</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <artifactId>collector</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>ru.yandex.practicum</groupId>
@@ -35,6 +37,31 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>1.63.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>1.63.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.yandex.practicum</groupId>
+            <artifactId>proto-schemas</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.devh</groupId>
+            <artifactId>grpc-spring-boot-starter</artifactId>
+            <version>${grpc-spring-boot-starter.version}</version>
         </dependency>
 
     </dependencies>

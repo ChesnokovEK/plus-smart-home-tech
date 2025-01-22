@@ -20,3 +20,11 @@ collector:
       topics:
         sensor-events: telemetry.sensor.v1
         hubs-events: telemetry.hubs.v1
+
+grpc:
+  client:
+    collector:
+      address: 'static://127.0.0.1:9090'
+      enable-keep-alive: true
+      keep-alive-without-calls: true
+      negotiation-type: plaintext
