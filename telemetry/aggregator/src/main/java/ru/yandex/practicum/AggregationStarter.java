@@ -56,20 +56,36 @@ public class AggregationStarter {
                 }
 
                 try {
-                    consumer.commitSync();
+                    consumer.commitAsync();
                 } catch (Exception e) {
-                    log.error("commitSync error ", e);
+                    log.error("commitAsync error ", e);
                 }
             }
         } catch (Exception e) {
             log.error("sensor event error ", e);
         } finally {
             try {
-                producer.flush();
-                producer.close();
-                consumer.close();
+                if (producer != null) {
+                    producer.flush();
+                }
             } catch (Exception e) {
-                log.error("resources close error ", e);
+                log.error("producer flush error ", e);
+            } finally {
+                if (producer != null) {
+                    try {
+                        producer.close();
+                    } catch (Exception e) {
+                        log.error("producer close error", e);
+                    }
+                }
+
+                if (consumer != null) {
+                    try {
+                        consumer.close();
+                    } catch (Exception e) {
+                        log.error("consumer close error", e);
+                    }
+                }
             }
         }
     }
