@@ -2,11 +2,11 @@ package ru.yandex.practicum.service.handler;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.configuration.KafkaConfig;
+import ru.yandex.practicum.grpc.telemetry.event.MotionSensorEvent;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.handler.BaseSensorEventHandler;
 import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
-import ru.yandex.practicum.model.MotionSensorEvent;
-import ru.yandex.practicum.model.SensorEvent;
-import ru.yandex.practicum.model.SensorEventType;
+
 
 @Service
 public class MotionSensorEventHandler extends BaseSensorEventHandler<MotionSensorAvro> {
@@ -16,17 +16,17 @@ public class MotionSensorEventHandler extends BaseSensorEventHandler<MotionSenso
     }
 
     @Override
-    public SensorEventType getMessageType() {
-        return SensorEventType.MOTION_SENSOR_EVENT;
+    public SensorEventProto.PayloadCase getMessageType() {
+        return SensorEventProto.PayloadCase.MOTION_SENSOR_EVENT;
     }
 
     @Override
-    protected MotionSensorAvro mapToAvro(SensorEvent event) {
-        var motionEvent = (MotionSensorEvent) event;
+    protected MotionSensorAvro mapToAvro(SensorEventProto event) {
+        MotionSensorEvent motionEvent = event.getMotionSensorEvent();
 
         return new MotionSensorAvro(
                 motionEvent.getLinkQuality(),
-                motionEvent.isMotion(),
+                motionEvent.getMotion(),
                 motionEvent.getVoltage()
         );
     }
