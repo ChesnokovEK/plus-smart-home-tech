@@ -1,5 +1,6 @@
 package ru.yandex.practicum.warehouse.feign;
 
+import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,5 +15,5 @@ public interface WarehouseClient {
     BookedProductsDto bookProducts(@RequestBody ShoppingCartDto shoppingCart);
 
     @PostMapping("/assembly")
-    BookedProductsDto assembleOrder(@RequestBody AssemblyProductForOrderFromShoppingCartRequest request);
+    BookedProductsDto assembleOrder(@RequestBody @Valid AssemblyProductForOrderFromShoppingCartRequest request);
 }

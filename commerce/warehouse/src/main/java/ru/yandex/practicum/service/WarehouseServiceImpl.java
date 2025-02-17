@@ -20,6 +20,8 @@ import ru.yandex.practicum.shoppingStore.enums.QuantityState;
 import ru.yandex.practicum.shoppingStore.feign.ShoppingStoreClient;
 import ru.yandex.practicum.warehouse.dto.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -79,6 +81,8 @@ public class WarehouseServiceImpl implements WarehouseService {
         double totalVolume = 0;
         boolean fragile = false;
 
+        List<WarehouseProduct> productsToUpdate = new ArrayList<>();
+
         for (Map.Entry<UUID, Integer> entry : shoppingCart.getProducts().entrySet()) {
             UUID productId = entry.getKey();
             int requestedQuantity = entry.getValue();
@@ -91,8 +95,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             }
 
             product.setQuantityAvailable(product.getQuantityAvailable() - requestedQuantity);
-            warehouseProductRepository.save(product);
-
+            productsToUpdate.add(product);
             QuantityState newState = determineState(product.getQuantityAvailable());
             shoppingStoreClient.setProductQuantityState(
                     SetProductQuantityStateRequest.builder()
@@ -108,6 +111,9 @@ public class WarehouseServiceImpl implements WarehouseService {
 
             fragile |= product.isFragile();
         }
+
+        warehouseProductRepository.saveAll(productsToUpdate);
+
 
         Booking booking = Booking.builder()
                 .shoppingCartId(shoppingCart.getShoppingCartId())

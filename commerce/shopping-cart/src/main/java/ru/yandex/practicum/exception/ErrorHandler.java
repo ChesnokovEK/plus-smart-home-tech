@@ -16,30 +16,35 @@ public class ErrorHandler {
     @ExceptionHandler(NoProductsInShoppingCartException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleNotAuthorizedUserException(NoProductsInShoppingCartException ex) {
+        log.error("Корзина пуста", ex);
         return errorResponse(HttpStatus.BAD_REQUEST, "Корзина пуста", ex);
     }
 
     @ExceptionHandler(NotAuthorizedUserException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handleNotAuthorizedUserException(NotAuthorizedUserException ex) {
-        return errorResponse(HttpStatus.UNAUTHORIZED, "unauthorized user", ex);
+        log.error("Пользователь не авторизован", ex);
+        return errorResponse(HttpStatus.UNAUTHORIZED, "Пользователь не авторизован", ex);
     }
 
     @ExceptionHandler(ProductNotAvailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleProductNotAvailableException(ProductNotAvailableException ex) {
-        return errorResponse(HttpStatus.BAD_REQUEST, "product unavailable", ex);
+        log.error("Товар недоступен", ex);
+        return errorResponse(HttpStatus.BAD_REQUEST, "Товар недоступен", ex);
     }
 
     @ExceptionHandler(CartNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCartNotFoundException(CartNotFoundException ex) {
-        return errorResponse(HttpStatus.NOT_FOUND, "cart not found", ex);
+        log.error("Корзина не найдена", ex);
+        return errorResponse(HttpStatus.NOT_FOUND, "Корзина не найдена", ex);
     }
 
     @ExceptionHandler(InternalServerErrorException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerErrorException(InternalServerErrorException ex) {
+        log.error("Внутренняя ошибка сервера", ex);
         return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера", ex);
     }
 

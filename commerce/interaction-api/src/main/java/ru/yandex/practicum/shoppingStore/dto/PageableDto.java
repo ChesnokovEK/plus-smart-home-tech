@@ -1,7 +1,7 @@
 package ru.yandex.practicum.shoppingStore.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,12 +15,10 @@ import java.util.List;
 @Builder
 public class PageableDto {
 
-    @NotNull(message = "page number must be not empty")
-    @Min(value = 0, message = "page number must greater or equal 0")
+    @PositiveOrZero
     private int page;
 
-    @NotNull(message = "page size must be not empty")
-    @Min(value = 1, message = "page size must greater 0")
+    @Positive
     private int size;
 
     private List<String> sort;

@@ -37,6 +37,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartMapper shoppingCartMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public ShoppingCartDto getShoppingCart(String username) {
         log.info("getShoppingCart user: {}", username);
         validateUsername(username);
