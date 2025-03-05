@@ -50,6 +50,7 @@ services:
       sleep 1;
       done;
       PGPASSWORD=test psql -U test -d postgres -c 'CREATE DATABASE cart;';
+      PGPASSWORD=test psql -U test -d postgres -c 'CREATE DATABASE analyzer;';
       PGPASSWORD=test psql -U test -d postgres -c 'CREATE DATABASE payment;';
       PGPASSWORD=test psql -U test -d postgres -c 'CREATE DATABASE warehouse;';
       PGPASSWORD=test psql -U test -d postgres -c 'CREATE DATABASE delivery;';
