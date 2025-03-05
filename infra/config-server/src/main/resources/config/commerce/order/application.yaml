@@ -1,7 +1,7 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/order
+    url: jdbc:postgresql://localhost:5433/orders
     username: test
     password: test
 
