@@ -19,7 +19,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "deliveries")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

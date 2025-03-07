@@ -1,10 +1,7 @@
 package ru.yandex.practicum.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.yandex.practicum.shoppingStore.enums.ProductCategory;
 import ru.yandex.practicum.shoppingStore.enums.ProductState;
 import ru.yandex.practicum.shoppingStore.enums.QuantityState;
@@ -14,7 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

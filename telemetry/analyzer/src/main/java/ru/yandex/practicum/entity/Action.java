@@ -15,7 +15,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "actions")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

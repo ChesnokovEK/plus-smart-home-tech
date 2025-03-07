@@ -13,6 +13,17 @@ spring:
         enabled: true
         service-id: config-server
 
+delivery:
+  cost:
+    base-rate: 5.0
+    fragile-multiplier: 0.2
+    weight-multiplier: 0.3
+    volume-multiplier: 0.2
+    address-multiplier: 0.2
+    warehouse-multipliers:
+      ADDRESS_1: 1.0
+      ADDRESS_2: 2.0
+
 eureka:
   client:
     serviceUrl:

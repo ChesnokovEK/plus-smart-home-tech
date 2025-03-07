@@ -12,7 +12,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "addresses")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.config.DeliveryCostConfig;
 import ru.yandex.practicum.delivery.dto.DeliveryDto;
 import ru.yandex.practicum.delivery.enums.DeliveryState;
 import ru.yandex.practicum.exception.NoDeliveryFoundException;
@@ -17,6 +18,7 @@ import ru.yandex.practicum.warehouse.dto.ShippedToDeliveryRequest;
 import ru.yandex.practicum.warehouse.feign.WarehouseClient;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -28,6 +30,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final DeliveryMapper deliveryMapper;
     private final OrderClient orderClient;
     private final WarehouseClient warehouseClient;
+    private final DeliveryCostConfig costConfig;
 
 
     @Override
@@ -102,43 +105,42 @@ public class DeliveryServiceImpl implements DeliveryService {
 
         String warehouseAddress = String.valueOf(warehouseClient.getWarehouseAddress());
 
-        final BigDecimal BASE_RATE = BigDecimal.valueOf(5.0);
-        BigDecimal step1 = costByAddress(warehouseAddress, BASE_RATE);
+        BigDecimal baseCost = costByAddress(warehouseAddress);
 
-        BigDecimal fragileAddition = orderDto.isFragile() ? step1.multiply(BigDecimal.valueOf(0.2)) : BigDecimal.ZERO;
-        BigDecimal step2 = step1.add(fragileAddition);
+        BigDecimal fragileAddition = orderDto.isFragile()
+                ? baseCost.multiply(costConfig.getFragileMultiplier())
+                : BigDecimal.ZERO;
 
-        BigDecimal weightAddition = BigDecimal.valueOf(orderDto.getDeliveryWeight()).multiply(BigDecimal.valueOf(0.3));
-        BigDecimal step3 = step2.add(weightAddition);
+        BigDecimal weightAddition = BigDecimal.valueOf(orderDto.getDeliveryWeight())
+                .multiply(costConfig.getWeightMultiplier());
 
-        BigDecimal volumeAddition = BigDecimal.valueOf(orderDto.getDeliveryVolume()).multiply(BigDecimal.valueOf(0.2));
-        BigDecimal step4 = step3.add(volumeAddition);
+        BigDecimal volumeAddition = BigDecimal.valueOf(orderDto.getDeliveryVolume())
+                .multiply(costConfig.getVolumeMultiplier());
+
+        BigDecimal stepCost = baseCost
+                .add(fragileAddition)
+                .add(weightAddition)
+                .add(volumeAddition);
 
         String deliveryStreet = delivery.getToAddress().getStreet();
         BigDecimal addressAddition = warehouseAddress.equals(deliveryStreet)
                 ? BigDecimal.ZERO
-                : step4.multiply(BigDecimal.valueOf(0.2));
-        BigDecimal totalCost = step4.add(addressAddition);
+                : stepCost.multiply(costConfig.getAddressMultiplier());
 
-        log.info("delivery cost for order{}: {}", orderDto.getOrderId(), totalCost);
+        BigDecimal totalCost = stepCost.add(addressAddition);
+
+        log.info("delivery cost for order {}: {}", orderDto.getOrderId(), totalCost);
         return totalCost;
     }
 
-    private static BigDecimal costByAddress(String warehouseAddress, BigDecimal BASE_RATE) {
-        final String ADDRESS_1 = "ADDRESS_1";
-        final String ADDRESS_2 = "ADDRESS_2";
+    private BigDecimal costByAddress(String warehouseAddress) {
+        BigDecimal warehouseMultiplier = costConfig.getWarehouseMultipliers().entrySet().stream()
+                .filter(entry -> warehouseAddress.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-
-        BigDecimal warehouseMultiplier = BigDecimal.ZERO;
-
-        if (warehouseAddress.contains(ADDRESS_1)) {
-            warehouseMultiplier = warehouseMultiplier.add(BigDecimal.ONE);
-        }
-
-        if (warehouseAddress.contains(ADDRESS_2)) {
-            warehouseMultiplier = warehouseMultiplier.add(BigDecimal.valueOf(2));
-        }
-
-        return BASE_RATE.multiply(warehouseMultiplier).add(BASE_RATE);
+        return costConfig.getBaseRate()
+                .multiply(warehouseMultiplier)
+                .add(costConfig.getBaseRate());
     }
 }

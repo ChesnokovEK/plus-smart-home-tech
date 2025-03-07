@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.exception.NotEnoughInfoInOrderToCalculateException;
 import ru.yandex.practicum.exception.PaymentNotFoundException;
 import ru.yandex.practicum.mapper.PaymentMapper;
 import ru.yandex.practicum.entity.Payment;
@@ -12,11 +13,14 @@ import ru.yandex.practicum.order.feign.OrderClient;
 import ru.yandex.practicum.payment.dto.PaymentDto;
 import ru.yandex.practicum.payment.enums.PaymentState;
 import ru.yandex.practicum.repository.PaymentRepository;
+import ru.yandex.practicum.shoppingStore.dto.ProductDto;
 import ru.yandex.practicum.shoppingStore.feign.ShoppingStoreClient;
 
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,12 +38,18 @@ public class PaymentServiceImpl implements PaymentService {
 
         BigDecimal total = BigDecimal.ZERO;
 
+        Map<UUID, ProductDto> products = shoppingStoreClient.getProductsByIds(orderDto.getProducts().keySet())
+                .stream()
+                .collect(Collectors.toMap(ProductDto::getProductId, Function.identity()));
+
         for (Map.Entry<UUID, Integer> entry : orderDto.getProducts().entrySet()) {
-            UUID productId = entry.getKey();
             Integer quantity = entry.getValue();
 
-            BigDecimal productPrice = shoppingStoreClient.getProduct(productId).getPrice();
+            if (!products.containsKey(entry.getKey())) {
+                throw new NotEnoughInfoInOrderToCalculateException("Недостаточно информации в заказе для расчёта");
+            }
 
+            BigDecimal productPrice = products.get(entry.getKey()).getPrice();
             BigDecimal lineTotal = productPrice.multiply(BigDecimal.valueOf(quantity));
             total = total.add(lineTotal);
         }
