@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.delivery.dto.AddressDto;
 import ru.yandex.practicum.entity.Booking;
 import ru.yandex.practicum.entity.WarehouseProduct;
 import ru.yandex.practicum.exception.NoSpecifiedProductInWarehouseException;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static ru.yandex.practicum.warehouse.dto.AddressDto.getDefaultAddress;
+import static ru.yandex.practicum.delivery.dto.AddressDto.getDefaultAddress;
 
 @Service
 @RequiredArgsConstructor

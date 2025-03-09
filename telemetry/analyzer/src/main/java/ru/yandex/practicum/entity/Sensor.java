@@ -8,7 +8,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "sensors")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

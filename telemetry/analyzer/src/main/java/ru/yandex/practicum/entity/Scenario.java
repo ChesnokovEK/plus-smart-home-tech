@@ -17,7 +17,8 @@ import java.util.List;
 @Table(name = "scenarios", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"hub_id", "name"})
 })
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

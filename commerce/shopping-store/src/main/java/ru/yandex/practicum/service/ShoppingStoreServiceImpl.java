@@ -17,6 +17,7 @@ import ru.yandex.practicum.shoppingStore.enums.ProductCategory;
 import ru.yandex.practicum.shoppingStore.dto.SetProductQuantityStateRequest;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -104,6 +105,15 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
                 });
 
         return productMapper.toProductDto(product);
+    }
+
+    @Override
+    public List<ProductDto> getProductsByIds(Collection<UUID> ids) {
+        log.info("getProductsByIds {}", ids);
+        return productRepository.findAllById(ids)
+                .stream()
+                .map(productMapper::toProductDto)
+                .toList();
     }
 
     private void updateProductFields(Product product, ProductDto productDto) {
